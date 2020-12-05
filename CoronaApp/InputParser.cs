@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace CoronaApp
@@ -12,47 +8,57 @@ namespace CoronaApp
     {
         private readonly List<County> _counties;
 
-        public string FilePath { get; set; }
+        public string InputFilePath { get; set; }
 
         public InputParser(string filePath)
         {
-            FilePath = filePath;
+            _counties = new List<County>();
+            InputFilePath = filePath;
         }
 
         public IEnumerable<County> Parse()
         {
-            XmlTextReader reader = new XmlTextReader(FilePath);
-            while (reader.Read())
+            XmlDocument doc = new XmlDocument();
+            doc.Load(InputFilePath);
+
+            XmlNode countriesNode = doc.LastChild;
+            if (countriesNode.HasChildNodes)
             {
-                County county = null;
-                switch (reader.NodeType)
+                foreach (XmlNode countryNode in countriesNode.ChildNodes)
                 {
-                    case XmlNodeType.Element:
-                        Debug.WriteLine($"<{reader.Name}>");
-                        if (reader.Name == "County")
-                            county = new County();
-                        break;
-                    case XmlNodeType.Text:
-                        Debug.WriteLine($"{reader.Value}");
-                        if (reader.Value == "Name")
-                            county.Name = reader.Value;
-                        if (reader.Value == "All")
-                            county.AllCases = int.Parse(reader.Value);
-                        if (reader.Value == "New")
-                            county.NewCases = int.Parse(reader.Value);
-                        if (reader.Value == "Weekly")
-                            county.WeeklyCases = int.Parse(reader.Value);
-                        if (reader.Value == "PerCapita")
-                            county.PerCapitaCases = int.Parse(reader.Value);
-                        break;
-                    case XmlNodeType.EndElement:
-                        Debug.WriteLine($"</{reader.Name}>");
-                        if (reader.Name == "County")
-                            _counties.Add(county);
-                        break;
+                    var county = new County();
+                    _counties.Add(county);
+                    ReadChildElements(countryNode, county);
                 }
             }
             return _counties;
+        }
+
+        private void ReadChildElements(XmlNode countryNode, County county)
+        {
+            foreach (XmlNode childNode in countryNode.ChildNodes)
+            {
+                if (childNode.Name == "Name")
+                {
+                    county.Name = childNode.InnerText;
+                }
+                else if (childNode.Name == "All")
+                {
+                    county.AllCases = int.Parse(childNode.InnerText);
+                }
+                else if (childNode.Name == "New")
+                {
+                    county.NewCases = int.Parse(childNode.InnerText);
+                }
+                else if (childNode.Name == "Weekly")
+                {
+                    county.WeeklyCases = int.Parse(childNode.InnerText);
+                }
+                else if (childNode.Name == "PerCapita")
+                {
+                    county.PerCapitaCases = int.Parse(childNode.InnerText);
+                }
+            }
         }
     }
 }
