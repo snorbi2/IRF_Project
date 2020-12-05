@@ -1,6 +1,6 @@
 ﻿namespace CoronaApp
 {
-    internal class County
+    public class County
     {
         public County()
         {
