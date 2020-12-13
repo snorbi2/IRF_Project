@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace CoronaApp
@@ -7,6 +9,7 @@ namespace CoronaApp
     public partial class Form1 : Form
     {
         private readonly CountyContext _context;
+        private static System.Timers.Timer aTimer;
 
         public Form1(CountyContext db)
         {
@@ -44,6 +47,44 @@ namespace CoronaApp
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             QueryCountyData();
+        }
+
+        private void ExportToCSV()
+        {
+            var path = "./output";
+            Directory.CreateDirectory(path);
+
+            var now = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+            var fileName = $"export_{now}.csv";
+            var filePath = Path.Combine(path, fileName);
+            // A File.CreateText() mindig létrehoz egy új fájlt,
+            // ezért egy másodpercen belül többször is meghívhatjuk
+            using (var w = File.CreateText(filePath))
+            {
+                foreach (var item in _context.Counties.ToList())
+                {
+                    var line = string.Format(
+                        "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\"",
+                        item.Name,
+                        item.AllCases,
+                        item.NewCases,
+                        item.WeeklyCases,
+                        item.PerCapitaCases);
+
+                    w.WriteLine(line);
+                    w.Flush();
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ExportToCSV();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
