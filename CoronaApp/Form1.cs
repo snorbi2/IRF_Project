@@ -25,11 +25,25 @@ namespace CoronaApp
 
             comboBox1.DisplayMember = "Name";
             comboBox1.ValueMember = "Name";
+
+            QueryCountyData();
+        }
+
+        private void QueryCountyData()
+        {
+            var name = ((County)comboBox1.SelectedItem).Name;
+            var county = from c in _context.Counties
+                         where c.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)
+                         select c;
+            textBox1.Text = county.First().AllCases.ToString();
+            textBox2.Text = county.First().NewCases.ToString();
+            textBox3.Text = county.First().WeeklyCases.ToString();
+            textBox4.Text = county.First().PerCapitaCases.ToString();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            QueryCountyData();
         }
     }
 }
