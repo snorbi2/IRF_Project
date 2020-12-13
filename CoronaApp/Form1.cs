@@ -9,7 +9,6 @@ namespace CoronaApp
     public partial class Form1 : Form
     {
         private readonly CountyContext _context;
-        private static System.Timers.Timer aTimer;
 
         public Form1(CountyContext db)
         {
@@ -36,7 +35,10 @@ namespace CoronaApp
         {
             var name = ((County)comboBox1.SelectedItem).Name;
             var county = from c in _context.Counties
-                         where c.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)
+                         where 
+                             c.Name.Equals(
+                                 name, 
+                                 StringComparison.CurrentCultureIgnoreCase)
                          select c;
             textBox1.Text = county.First().AllCases.ToString();
             textBox2.Text = county.First().NewCases.ToString();
@@ -75,6 +77,12 @@ namespace CoronaApp
                     w.Flush();
                 }
             }
+
+            MessageBox.Show(
+                $"Adatok sikeresen kimentve a következő fájlba:\n{fileName}",
+                "CSV Export",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -84,7 +92,13 @@ namespace CoronaApp
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
+            timer1.Enabled = checkBox1.Checked;
+        }
 
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            comboBox1.SelectedIndex = 
+                (comboBox1.SelectedIndex + 1) % comboBox1.Items.Count;
         }
     }
 }
