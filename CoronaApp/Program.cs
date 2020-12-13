@@ -16,9 +16,21 @@ namespace CoronaApp
         {
             var inputParser = new InputParser("./input/input-2020-12-05.xml");
             var counties = inputParser.Parse();
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            using (var db = new CountyContext())
+            {
+                foreach (var county in counties)
+                {
+                    var tmpCounty = db.Counties.Find(county.Name);
+                    if (tmpCounty != null)
+                        db.Counties.Remove(tmpCounty);
+                    db.Counties.Add(county);
+                }
+                db.SaveChanges();
+
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new Form1(db));
+            }
         }
     }
 }

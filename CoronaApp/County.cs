@@ -1,4 +1,6 @@
-﻿namespace CoronaApp
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CoronaApp
 {
     public class County
     {
@@ -15,6 +17,7 @@
             PerCapitaCases = perCapitaCases;
         }
 
+        [Key]
         public string Name { get; set; }
         public int AllCases { get; set; }
         public int NewCases { get; set; }
