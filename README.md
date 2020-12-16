@@ -15,10 +15,10 @@ A) LINQ lekérdezés használata legalább egy WHERE feltétellel
 3. Adatok exportálása / megjelenítése
 A) Írás CSV fájlba
 
-    A program az adatbázist időközönként csv fájlba menti le (backup).
+    A program az adatbázist gombnyomásra csv fájlba menti le (backup).
 
 4. Általános elemek
 D) Timer használata
 
-    A mentés Timer segítségével történik, ami a programból konfigurálható.
+    Automatikus megyeváltás beállítható egy checkbox-szal.
    
